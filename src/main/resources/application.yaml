@@ -1,0 +1,4 @@
+spring.main.web-application-type : none
+stubConfig:
+  port : 9090
+  configPath : 

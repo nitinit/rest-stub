@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.3.0.RELEASE</version>
+		<relativePath /> <!-- lookup parent from repository -->
+	</parent>
+
+	<groupId>org.ng</groupId>
+	<artifactId>rest-stub</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<name>range-stub</name>
+	<description>Range Stub</description>
+
+	<properties>
+		<java.version>1.8</java.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.github.tomakehurst</groupId>
+			<artifactId>wiremock-jre8</artifactId>
+			<version>2.26.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+         		<exclusion>
+             		<groupId>org.springframework.boot</groupId>
+             		<artifactId>spring-boot-starter-tomcat</artifactId>
+         		</exclusion>
+         		<exclusion>
+             		<groupId>org.springframework.boot</groupId>
+             		<artifactId>spring-boot-starter-jetty</artifactId>
+         		</exclusion>
+    		</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>0.32.0</version>
+				<extensions>true</extensions>
+				<configuration>
+					<verbose>true</verbose>
+					<images>
+						<image>
+							<name>${project.artifactId}</name>
+							<alias>rest-stub</alias>
+							<build>
+								<from>java:8-jdk-alpine</from>
+								<entryPoint>
+									<exec>
+										<args>java</args>
+										<args>-jar</args>
+										<args>/maven/${project.artifactId}.jar</args>
+									</exec>
+								</entryPoint>
+								<assembly>
+									<mode>dir</mode>
+									<descriptor>${project.basedir}/src/main/resources/assembly.xml</descriptor>
+								</assembly>
+								<healthCheck>
+									 <cmd>
+										curl -f http://localhost:9090/health || exit 1
+									</cmd> 
+									<interval>10s</interval>
+									<timeout>3s</timeout>
+									<retries>20</retries>
+								</healthCheck>
+							</build>
+							<run>
+							  	<hostname>rest-stub</hostname>
+							  	<namingStrategy>alias</namingStrategy>
+							    <!--  <wait> <healthy>true</healthy> </wait> -->
+								<env>
+									<stubConfig.port>9090</stubConfig.port>
+									<stubConfig.configPath>/maven/stub_templates</stubConfig.configPath>
+								</env>
+								<ports>
+									<port>9090:9090</port>
+								</ports>
+							</run>
+						</image>
+					</images>
+				</configuration>
+				<executions>
+					<execution>
+						<id>build</id>
+						<goals>
+							<goal>build</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		<finalName>rest-stub</finalName>
+	</build>
+
+</project>

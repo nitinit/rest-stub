@@ -1,0 +1,21 @@
+{
+	"id": "7e0e44b6-a414-49b9-8210-22267d1e6eab",
+	"priority": 2,
+	"request": {
+		"urlPath": "/schedules/ByEvent",
+		"method": "GET"
+	},
+	"response": {
+		"status": 200,
+		"headers": {
+			"Content-Type": "application/json"
+		},
+		"bodyFileName": "responseBody/schedule_api/200_response.json",
+		"transformers": [
+			"response-template"
+		]
+	},
+	"uuid": "7e0e44b6-a414-49b9-8210-22267d1e6eab",
+	"persistent": true,
+	"insertionIndex": 3
+}
